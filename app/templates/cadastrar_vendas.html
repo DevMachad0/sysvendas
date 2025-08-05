@@ -1,0 +1,295 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/cadastrar_vendas.css">
+
+<div class="container-formulario">
+<form class="formulario-venda" autocomplete="off">
+  <h2>Registrar nova venda</h2>
+  <h3>Usuário: <span id="nome-vendedor"></span></h3>
+  <div></div>
+  <!-- Container de campos principais -->
+  <div class="container-campos">
+    <div class="campo">
+      <label>Nome do cliente:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="nome" id="nome-cliente" placeholder="Ex: João da Silva" required>
+    </div>
+
+    <div class="campo">
+      <label>Nome do contato:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="nome_do_contato" id="nome-contato" placeholder="Ex: Maria Oliveira" required>
+    </div>
+
+    <div class="campo">
+      <label>CEP:</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input oninput="this.value = this.value.toUpperCase()" type="text" name="cep" id="cep-input" maxlength="9" placeholder="Ex: 01001-000" required>
+        <button type="button" onclick="window.open('https://buscacepinter.correios.com.br/app/endereco/index.php', '_blank')" title="Buscar no site dos Correios" style="padding: 0 12px; font-size: 10px;">❔</button>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Rua:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="rua" id="rua-input" placeholder="Ex: Av. Paulista">
+    </div>
+    <div class="campo">
+      <label>Bairro:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="bairro" id="bairro-input" placeholder="Ex: Bela Vista">
+    </div>
+    <div class="campo">
+      <label>Número:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="numero" id="numero-input" placeholder="Ex: 123">
+    </div>
+    <div class="campo">
+      <label>Cidade:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="cidade" id="cidade-input" placeholder="Ex: São Paulo">
+    </div>
+    <div class="campo">
+      <label>Estado:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="estado" id="estado-input" maxlength="2" placeholder="Ex: SP">
+    </div>
+
+    <div class="campo">
+      <label>E-mail:</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input oninput="this.value = this.value.toUpperCase()" type="email" name="email_temp" id="email-input" placeholder="Ex: cliente@email.com">
+        <button type="button" id="add-email" style="padding: 0 12px; font-size: 20px;">+</button>
+      </div>
+      <div class="dropdown-emails" id="dropdown-emails" style="position:relative;">
+        <button type="button" id="btn-lista-emails" style="margin-top:8px; width:100%; background:#f1f1f1; border:1px solid #ccc; border-radius:4px; padding:6px; text-align:left;" required>
+          E-mails adicionados <span style="float:right;">▼</span>
+        </button>
+        <ul id="emails-list" style="display:none; position:absolute; left:0; right:0; background:#fff; border:1px solid #ccc; border-radius:4px; margin-top:2px; z-index:10; list-style:none; padding:0;"></ul>
+      </div>
+      <input oninput="this.value = this.value.toUpperCase()" type="hidden" name="emails" id="emails-hidden">
+    </div>
+
+    <div class="campo">
+      <label>CNPJ ou CPF:</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input oninput="this.value = this.value.toUpperCase()" type="text" name="cnpj_cpf" id="cnpj-cpf-input" placeholder="Ex: 123.456.789-09 ou 12.345.678/0001-90" required>
+        <button type="button" onclick="window.open('https://dfe-portal.svrs.rs.gov.br/NFE/CCC', '_blank')" title="Consultar no Siscred" style="padding: 0 12px; font-size: 10px;">❔</button>
+      </div>
+    </div>
+
+    <div class="campo" id="campo-razao-social" style="display:none;">
+      <label>Razão Social:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="razao_social" id="razao-social-input" placeholder="Ex: Empresa LTDA">
+    </div>
+
+    <div class="campo" id="campo-identidade">
+      <label id="label-identidade">Identidade:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="inscricao_estadual_identidade" id="identidade-input" placeholder="Ex: 12.345.678-9 ou ISENTO">
+    </div>
+
+    <div class="campo">
+      <label>Telefone:</label>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <select id="telefone-pais-select" style="width: 80px;">
+          <option value="+55" data-emoji="🇧🇷" selected>🇧🇷 +55</option>
+          <option value="+1" data-emoji="🇺🇸">🇺🇸 +1</option>
+          <option value="+54" data-emoji="🇦🇷">🇦🇷 +54</option>
+          <option value="+44" data-emoji="🇬🇧">🇬🇧 +44</option>
+          <option value="+351" data-emoji="🇵🇹">🇵🇹 +351</option>
+          <option value="+33" data-emoji="🇫🇷">🇫🇷 +33</option>
+          <option value="+49" data-emoji="🇩🇪">🇩🇪 +49</option>
+          <option value="+34" data-emoji="🇪🇸">🇪🇸 +34</option>
+          <option value="+39" data-emoji="🇮🇹">🇮🇹 +39</option>
+          <option value="+81" data-emoji="🇯🇵">🇯🇵 +81</option>
+          <option value="+86" data-emoji="🇨🇳">🇨🇳 +86</option>
+          <option value="+91" data-emoji="🇮🇳">🇮🇳 +91</option>
+          <option value="+7" data-emoji="🇷🇺">🇷🇺 +7</option>
+          <option value="+61" data-emoji="🇦🇺">🇦🇺 +61</option>
+          <option value="+64" data-emoji="🇳🇿">🇳🇿 +64</option>
+          <option value="+27" data-emoji="🇿🇦">🇿🇦 +27</option>
+          <option value="+90" data-emoji="🇹🇷">🇹🇷 +90</option>
+          <option value="+62" data-emoji="🇮🇩">🇮🇩 +62</option>
+          <option value="+82" data-emoji="🇰🇷">🇰🇷 +82</option>
+          <option value="+966" data-emoji="🇸🇦">🇸🇦 +966</option>
+          <option value="+234" data-emoji="🇳🇬">🇳🇬 +234</option>
+          <option value="+20" data-emoji="🇪🇬">🇪🇬 +20</option>
+          <option value="+972" data-emoji="🇮🇱">🇮🇱 +972</option>
+          <option value="+380" data-emoji="🇺🇦">🇺🇦 +380</option>
+          <option value="+420" data-emoji="🇨🇿">🇨🇿 +420</option>
+          <option value="+358" data-emoji="🇫🇮">🇫🇮 +358</option>
+          <option value="+358" data-emoji="🇦🇽">🇦🇽 +358</option>
+          <option value="+386" data-emoji="🇸🇮">🇸🇮 +386</option>
+          <option value="+48" data-emoji="🇵🇱">🇵🇱 +48</option>
+          <option value="+351" data-emoji="🇲🇴">🇲🇴 +351</option>
+          <option value="+852" data-emoji="🇭🇰">🇭🇰 +852</option>
+          <option value="+65" data-emoji="🇸🇬">🇸🇬 +65</option>
+          <option value="+63" data-emoji="🇵🇭">🇵🇭 +63</option>
+          <option value="+880" data-emoji="🇧🇩">🇧🇩 +880</option>
+          <option value="+92" data-emoji="🇵🇰">🇵🇰 +92</option>
+          <option value="+98" data-emoji="🇮🇷">🇮🇷 +98</option>
+          <option value="+964" data-emoji="🇮🇶">🇮🇶 +964</option>
+          <option value="+84" data-emoji="🇻🇳">🇻🇳 +84</option>
+          <option value="+66" data-emoji="🇹🇭">🇹🇭 +66</option>
+          <option value="+60" data-emoji="🇲🇾">🇲🇾 +60</option>
+          <option value="+212" data-emoji="🇲🇦">🇲🇦 +212</option>
+          <option value="+213" data-emoji="🇩🇿">🇩🇿 +213</option>
+          <option value="+216" data-emoji="🇹🇳">🇹🇳 +216</option>
+          <option value="+961" data-emoji="🇱🇧">🇱🇧 +961</option>
+          <option value="+994" data-emoji="🇦🇿">🇦🇿 +994</option>
+          <option value="+380" data-emoji="🇺🇦">🇺🇦 +380</option>
+          <option value="+373" data-emoji="🇲🇩">🇲🇩 +373</option>
+          <option value="+994" data-emoji="🇦🇿">🇦🇿 +994</option>
+          <option value="+995" data-emoji="🇬🇪">🇬🇪 +995</option>
+          <option value="+998" data-emoji="🇺🇿">🇺🇿 +998</option>
+          <option value="+961" data-emoji="🇱🇧">🇱🇧 +961</option>
+          <option value="+971" data-emoji="🇦🇪">🇦🇪 +971</option>
+          <option value="+974" data-emoji="🇶🇦">🇶🇦 +974</option>
+          <option value="+965" data-emoji="🇰🇼">🇰🇼 +965</option>
+          <option value="+968" data-emoji="🇴🇲">🇴🇲 +968</option>
+          <option value="+973" data-emoji="🇧🇭">🇧🇭 +973</option>
+          <option value="+961" data-emoji="🇱🇧">🇱🇧 +961</option>
+          <option value="+994" data-emoji="🇦🇿">🇦🇿 +994</option>
+          <option value="+380" data-emoji="🇺🇦">🇺🇦 +380</option>
+          
+          <!-- ...adicione outros países conforme necessário... -->
+        </select>
+        <input oninput="this.value = this.value.toUpperCase()" type="text" name="telefone_temp" id="telefone-input" autocomplete="off" style="flex:1;" placeholder="Ex: (11) 91234-5678" maxlength="20">
+        <button type="button" id="add-telefone" style="padding: 0 12px; font-size: 20px;">+</button>
+      </div>
+      <div class="dropdown-telefones" id="dropdown-telefones" style="position:relative;">
+        <button type="button" id="btn-lista-telefones" style="margin-top:8px; width:100%; background:#f1f1f1; border:1px solid #ccc; border-radius:4px; padding:6px; text-align:left;" required>
+          Telefones adicionados <span style="float:right;">▼</span>
+        </button>
+        <ul id="telefones-list" style="display:none; position:absolute; left:0; right:0; background:#fff; border:1px solid #ccc; border-radius:4px; margin-top:2px; z-index:10; list-style:none; padding:0;"></ul>
+      </div>
+      <input oninput="this.value = this.value.toUpperCase()" type="hidden" name="fones" id="fones-hidden">
+    </div>
+
+  </div>
+
+  <!-- Container de detalhes da venda -->
+  <div class="container-detalhes">
+    <div class="campo">
+      <label>Data prestação inicial:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="date" name="data_prestacao_inicial">
+    </div>
+
+    <div class="campo">
+      <label>Tipo envio de boleto:</label>
+      <input type="text" name="tipo_envio_boleto" value="EMAIL" readonly>
+    </div>
+
+    <div class="campo">
+      <label>Tipo de remessa:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="tipo_remessa">
+    </div>
+
+    <div class="campo">
+      <label>Produto:</label>
+      <div id="produto-container" class="produto-personalizado-container">
+        <select id="produto" name="produto" required>
+          <option value="">Selecione o produto</option>
+          {% for produto_nome in info_vendas %}
+            <option value="{{ produto_nome }}">{{ produto_nome }}</option>
+          {% endfor %}
+          <option value="Personalizado">Personalizado</option>
+        </select>
+        <button type="button" id="btn-add-produto" style="display:none;" class="btn-add-produto">+</button>
+      </div>
+      <div id="personalizado-area" style="display:none;">
+        <ul id="lista-produtos-personalizados" class="lista-produtos-personalizados"></ul>
+        <input oninput="this.value = this.value.toUpperCase()" type="hidden" name="produtos_personalizados" id="produtos-personalizados-hidden">
+        <small id="personalizado-info">Adicione até 3 produtos personalizados.</small>
+      </div>
+    </div>
+
+    <div class="campo" style="display:flex;align-items:flex-end;gap:12px;">
+      <div style="flex:1;">
+        <label>Condições:</label>
+        <select id="condicoes" name="condicoes" disabled required>
+          <option value="">Selecione uma condição</option>
+        </select>
+      </div>
+      <!-- NOVO: Campo dinâmico Condições da Venda -->
+      <div id="condicoes-venda-container" style="display:none;flex:1;">
+        <label>Condições da Venda:</label>
+        <select id="condicoes-venda-select">
+          <option value="">Selecione</option>
+          <option value="avista">À vista</option>
+          <option value="entrada_parcela">Entrada + Parcela</option>
+        </select>
+      </div>
+    </div>
+    <!-- NOVO: Campo Valor da venda (só para à vista) -->
+    <div class="campo" id="campo-valor-venda" style="display:none;">
+      <label>Valor da venda:</label>
+      <input type="text" id="valor_venda_avista" name="valor_venda_avista" placeholder="Valor à vista">
+    </div>
+    <div class="campo" id="campo-entrada">
+      <label>Entrada:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" id="valor_entrada" name="valor_entrada" placeholder="Valor de entrada" value="0">
+    </div>
+    <div class="campo" id="campo-parcela">
+      <label>Valor das Parcelas:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" id="valor_parcelas" name="valor_parcelas" required value="0">
+    </div>
+
+    <div class="campo">
+      <label>Valor da Tabela:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" id="valor_tabela" name="valor_tabela" readonly>
+    </div>
+      <label id="label-desconto-autorizado" style="margin-left:12px; display:inline-flex; align-items:center;">
+        <input oninput="this.value = this.value.toUpperCase()" type="checkbox" id="desconto_autorizado" name="desconto_autorizado" style="margin-right:4px;">
+        desconto autorizado?
+      </label>
+  </div>
+<div class="container-detalhes">
+
+    <div class="campo">
+      <label>Valor Real da Venda:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="valor_real" id="valor_real" placeholder="Total calculado" readonly>
+    </div>
+    <div class="campo" style="display:flex;align-items:flex-end;gap:12px;">
+      <!-- NOVO CAMPO: Quantidade de acessos (agora editável) -->
+      <div style="flex:1;">
+        <label for="quantidade-acessos">Quantidade de acessos:</label>
+        <input type="number" id="quantidade-acessos" name="quantidade_acessos" value="0" min="0">
+      </div>
+    </div>
+
+    <!-- NOVO CAMPO: Tipo do cliente -->
+    <div id="tipo-cliente" class="campo">
+      <label>Tipo do cliente:</label>
+      <select name="tipo_cliente" id="tipo-cliente-input" class="tipo-cliente-select">
+        <option oninput="this.value = this.value.toUpperCase()" value="">Selecione</option>
+        <option oninput="this.value = this.value.toUpperCase()" value="verde">Verde</option>
+        <option oninput="this.value = this.value.toUpperCase()" value="vermelho">Vermelho</option>
+      </select>
+    </div>
+</div>
+  <!-- Observações -->
+  <div class="container-observacao">
+    <label>Observação do Pedido:</label>
+    <textarea oninput="this.value = this.value.toUpperCase()" name="obs" rows="4" placeholder="Ex: Cliente pediu entrega rápida"></textarea>
+  </div>
+
+  <!-- Botões -->
+  <div class="container-botoes">
+    <button type="button" class="cancelar" onclick="window.location.href='/vendas'">Cancelar</button>
+    <button type="submit" class="registrar">Registrar</button>
+  </div>
+</form>
+</div>
+
+<!-- POP-UP SELECIONAR VENDEDOR (apenas para admin) -->
+<div id="popup-vendedor" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:24px; border-radius:8px; min-width:320px; max-width:90vw;">
+    <h3>Selecione o vendedor para atribuir a venda</h3>
+    <select id="select-vendedor" style="width:100%; padding:8px; margin:12px 0;"></select>
+    <div style="text-align:right;">
+      <button id="btn-cancelar-popup" style="margin-right:8px;">Cancelar</button>
+      <button id="btn-confirmar-vendedor">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="produtos-json" data-produtos='{{ info_vendas | tojson | safe }}'></div>
+
+<script src="../static/js/cadastrar_vendas.js"></script>
+
+{% endblock %}

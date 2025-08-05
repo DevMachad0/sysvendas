@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/usuarios.css">
+
+<div class="usuarios-container">
+  <!-- Container Topo -->
+  <div class="usuarios-filtro">
+    <h2>Usuários</h2>
+    <form id="filtro-form" class="filtro-form">
+      <label for="busca">Pesquisar:</label>
+      <input type="text" id="busca" placeholder="Nome">
+      <select id="tipo" name="tipo">
+        <option value="">Tipo</option>
+        <option value="admin">Admin</option>
+        <option value="vendedor">Vendedor</option>
+        <option value="pos_vendas">Pós-vendas</option>
+        <option value="faturamento">Faturamento</option>
+      </select>
+      <select id="status" name="status">
+        <option value="">Status</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+      <button type="submit" class="btn-pesquisar">🔍 Pesquisar</button>
+    </form>
+  </div>
+
+  <!-- Container Cards -->
+  <div class="usuarios-cards" id="usuarios-cards">
+    <!-- Os cartões serão inseridos via JS -->
+  </div>
+
+  <!-- Container Paginação -->
+  <div class="usuarios-paginacao">
+    <button>&laquo;</button>
+    <button class="ativo">1</button>
+    <button>&raquo;</button>
+  </div>
+</div>
+<script src="../static/js/usuarios.js"></script>
+{% endblock %}

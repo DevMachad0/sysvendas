@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/erro.css">
+<div class="container-erro" style="max-width:500px;margin:60px auto;padding:32px 24px;background:#fff;border-radius:12px;box-shadow:0 2px 12px;text-align:center;">
+  <div class="titulo_erro" style="color:#e74c3c;font-size:2.2em;margin-bottom:16px;">Erro 500 - Erro Interno do Servidor</div>
+  <div class="descricao_erro" style="color:#2c2c2c; font-size:1.2em;margin-bottom:18px;">
+    Ocorreu um erro inesperado ao acessar a página <strong>{{ pagina_erro|default('desconhecida') }}</strong>.
+  </div>
+  <div style="color:#888;margin-bottom:24px;">
+    <span>Por favor, entre em contato com a equipe de desenvolvimento para correção imediata.</span><br>
+    <span style="font-size:0.95em;">Desculpe pelo transtorno.</span>
+  </div>
+</div>
+{% endblock %}

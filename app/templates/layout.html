@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="shortcut icon" href="../static/image/favicon.ico" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SysVendas - Início</title>
+  <link rel="stylesheet" href="../static/css/layout.css">
+  <link rel="stylesheet" href="../static/css/night.css" id="night-css" disabled>
+</head>
+<body>
+  <div class="container-principal">
+
+    <!-- Sidebar -->
+    <div class="container-lateral">
+      <div class="logo-container">
+        <img src="../static/image/Logo-Simplo1.png" alt="Logo SIMPLO">
+      </div>
+      <nav class="menu-lateral">
+        <a href="{{ url_for('barra.inicio') }}">Inicio</a>
+        <a onclick="enviarStorageParaVendas()" style="cursor: pointer;">Vendas</a>
+        <a href="{{ url_for('produtos.produtos') }}">Produtos</a>
+        <a href="{{ url_for('cadastra.cadastrar') }}">Cadastrar</a>
+        <a href="{{ url_for('usuarios.usuarios') }}">Usuários</a>
+        <a href="{{ url_for('configs.configs') }}">Configs</a>
+        <a href="{{ url_for('logs.logs') }}">Logs</a>
+        <!-- Botão sair para mobile -->
+        <div class="btn-sair-mobile" style="display:none;">
+          <button>Sair</button>
+        </div>
+      </nav>
+      <div class="btn-sair">
+        <button id="btn-sair-sistema">Sair</button>
+      </div>
+      <div class="versao-sistema" style="text-align:center; font-size:13px; color:#888; margin:12px 0 0 0;">
+        v1.1.11
+      </div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="container-direita">
+
+      <!-- Topbar -->
+      <div class="container-topo">
+        <button id="btn-menu-mobile" style="display:none;background:none;border:none;font-size:28px;cursor:pointer;">&#9776;</button>
+        <div class="notificacoes" id="notificacoes">
+          <span class="icone-notificacao">🔔</span>
+          <span class="badge" style="display:none;">0</span>
+        </div>
+        <button id="btn-night-mode" title="Modo noturno" style="background:none;border:none;font-size:22px;cursor:pointer;margin-left:8px;">🌙</button>
+        <div class="usuario" id="usuario-topbar" style="cursor:pointer;">
+          <div class="icone-usuario" id="icone-usuario">👤</div>
+          <span class="nome-usuario" id="nome-usuario">Admin</span>
+        </div>
+      </div>
+
+      <div id="page-loader">
+        <div class="spinner"></div>
+        <span>Carregando...</span>
+      </div>      
+
+      <!-- Conteúdo Dinâmico -->
+      <div class="container-conteudo">
+        {% block conteudo %}
+        {% endblock %}
+      </div>
+
+    </div>
+  </div>
+  <script src="../static/js/layout.js"></script>
+  <script>
+  // filepath: c:\Users\deivid\Desktop\sistemaVendas\app\templates\layout.html
+  document.addEventListener('DOMContentLoaded', function() {
+    const btnNight = document.getElementById('btn-night-mode');
+    const nightCss = document.getElementById('night-css');
+    btnNight && btnNight.addEventListener('click', function() {
+      const isNight = document.body.classList.toggle('night-mode');
+      nightCss.disabled = !isNight;
+      btnNight.textContent = isNight ? '☀️' : '🌙';
+      btnNight.title = isNight ? 'Modo claro' : 'Modo noturno';
+      // Salva preferência no localStorage
+      localStorage.setItem('nightMode', isNight ? '1' : '0');
+    });
+    // Carrega preferência ao abrir
+    if (localStorage.getItem('nightMode') === '1') {
+      document.body.classList.add('night-mode');
+      nightCss.disabled = false;
+      btnNight.textContent = '☀️';
+      btnNight.title = 'Modo claro';
+    }
+  });
+  </script>
+</body>
+</html>

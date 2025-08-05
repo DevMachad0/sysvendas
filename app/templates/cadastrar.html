@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/cadastro.css">
+
+<h2>Cadastrar novo usuário</h2>
+
+<form method="POST" enctype="multipart/form-data" class="form-cadastro">
+  <!-- Topo -->
+  <div class="container-topo-form">
+    <div class="campos-esquerda">
+      <div>
+        <label for="nome">Nome completo:</label>
+        <input type="text" id="nome" name="nome_completo" required>
+      </div>
+
+      <div>
+        <label for="user">User:</label>
+        <input type="text" id="user" name="username" required>
+      </div>
+
+      <div>
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required>
+      </div>
+
+      <div>
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" name="tipo">
+          <option value="admin">Admin</option>
+          <option value="vendedor">Vendedor</option>
+          <option value="pos_vendas">Pós-vendas</option>
+          <option value="faturamento">Faturamento</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="campo-foto">
+      <div class="foto-preview" id="foto-preview">Foto</div>
+      <input type="file" name="foto" id="foto-input" accept="image/*" style="display:none;">
+    </div>
+  </div>
+
+  <!-- Meio -->
+  <div class="container-meio-form">
+    <div>
+      <label>Pós vendas:</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="pos-vendas-select" style="flex:1;">
+          <option value="">Selecione...</option>
+          {% for usuario in pos_vendas_usuarios %}
+            <option value="{{ usuario.username }}">
+              {{ usuario.nome or usuario.nome_completo or usuario.username }}
+              {% if usuario.tipo == 'pos_vendas' %}
+                (pós-vendas)
+              {% endif %}
+            </option>
+          {% endfor %}
+        </select>
+        <button type="button" id="btn-add-pos-vendas" style="padding:0 12px;font-size:20px;">+</button>
+      </div>
+      <ul id="lista-pos-vendas" style="margin:8px 0 0 0; padding:0; list-style:none; min-height:28px;"></ul>
+      <input type="hidden" name="pos_vendas" id="pos_vendas-hidden">
+      <small>Adicione um ou mais pós-vendas.</small>
+    </div>
+
+    <div>
+      <label for="n_vendedor">Contato:</label>
+      <input type="text" id="n_vendedor" name="n_vendedor">
+    </div>
+
+    <div>
+      <label for="meta_mes">Meta do mês:</label>
+      <input type="text" id="meta_mes" name="meta_mes">
+    </div>
+  </div>
+
+  <!-- Botões -->
+  <div class="container-botoes-form">
+    <button type="button" class="btn-cancelar">Cancelar</button>
+    <button type="submit" class="btn-cadastrar">Cadastrar</button>
+  </div>
+</form>
+<script src="../static/js/casdastro.js"></script>
+{% endblock %}

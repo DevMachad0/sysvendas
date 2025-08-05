@@ -1,0 +1,225 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/vendas.css">
+
+<div class="container-vendas">
+ 
+  <!-- Ações -->
+  <div class="container-acoes-vendas">
+    {% if session.user and session.user.tipo == 'admin' %}
+      <button id="btn-fim-expediente" class="btn-fim-expediente" style="margin-right:16px;">Fim do expediente</button>
+    {% endif %}
+    <a href="{{ url_for('cadastra_vendas.cadastrar_vendas') }}" class="btn-nova-venda" id="btn-nova-venda">Nova venda</a>
+    <button id="btn-editar-venda" class="btn-editar-venda" disabled>Editar</button>
+    <button id="btn-reabrir-venda" class="btn-reabrir-venda" disabled style="display:none;">Reabrir</button>
+  </div>
+ <!-- Filtros -->
+ <form id="filtro-vendas-form" method="get" action="{{ url_for('vendas.vendas') }}" class="container-filtros-vendas">
+    <label for="busca">Pesquisar:</label>
+    <input type="text" id="busca" name="busca" placeholder="Cliente, CPF, CNPJ ou Vendedor" value="{{ request.args.get('busca', '') }}">
+
+    <!-- Novos campos para filtro de período -->
+    <label for="data_inicio">Data início:</label>
+    <input type="date" id="data_inicio" name="data_inicio" value="{{ request.args.get('data_inicio', '') }}">
+    <label for="data_fim">Data fim:</label>
+    <input type="date" id="data_fim" name="data_fim" value="{{ request.args.get('data_fim', '') }}" disabled>
+
+    <!-- Campo antigo de data única (opcional, pode remover se não quiser mais) -->
+    <input type="date" id="data" name="data" value="{{ request.args.get('data', '') }}" style="display:none;">
+
+    <label for="filtro-status">Status:</label>
+    <select name="status" id="filtro-status">
+      <option value="">Status (todos)</option>
+      {% for st in status_lista %}
+        <option value="{{ st }}" {% if request.args.get('status') == st %}selected{% endif %}>{{ st }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn-pesquisar">🔍 Pesquisar</button>
+  </form>
+<script>
+  // Habilita data_fim só se data_inicio estiver preenchido
+  document.addEventListener('DOMContentLoaded', function() {
+    const dataInicio = document.getElementById('data_inicio');
+    const dataFim = document.getElementById('data_fim');
+    function toggleFim() {
+      if (dataInicio.value) {
+        dataFim.disabled = false;
+        dataFim.min = dataInicio.value;
+      } else {
+        dataFim.disabled = true;
+        dataFim.value = '';
+      }
+    }
+    dataInicio.addEventListener('change', toggleFim);
+    toggleFim();
+  });
+</script>
+
+  <!-- Tabela -->
+  <div class="container-tabela-vendas">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº venda</th>
+          <th>Vendedor</th>
+          <th>Cliente</th>
+          <th>CNPJ ou CPF</th>
+          <th>Tipo de venda</th>
+          <th>Produto</th>
+          <th>Tabela</th>
+          <th>Valor</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-vendas-body">
+        {% for venda in vendas %}
+          <tr data-numero-venda="{{ venda.numero_da_venda }}" data-status="{{ venda.status|lower }}">
+            <td>{{ venda.numero_da_venda }}</td>
+            <td class="td-corte" title="{{ venda.vendedor }}">{{ venda.vendedor }}</td>
+            <td class="td-corte" title="{{ venda.nome }}">{{ venda.nome }}</td>
+            <td class="td-corte" title="{{ venda.cnpj_cpf }}">{{ venda.cnpj_cpf }}</td>
+            {% if venda.produto == "Atualização" %}
+              <td>Atualização</td>
+            {% else %}
+              <td>Venda nova</td>
+            {% endif %} 
+            <td class="td-corte" title="{{ venda.produto }}">{{ venda.produto }}</td>
+            <td>
+              {% if venda.valor_tabela is defined %}
+                R${{ venda.valor_tabela }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>R${{ venda.valor_real }}</td>
+            <td class="td-corte"
+              {% if venda.status|lower == 'cancelada' and venda.obs_vendas %}
+                data-obs-vendas="{{ venda.obs_vendas|e }}"
+                style="cursor: pointer; position: relative;"
+              {% endif %}
+            >
+              {% set status = venda.status|lower %}
+              {% if status == 'aprovada' %}
+                <span style="background:#27ae60;color:white;padding:2px 10px;border-radius:10px;">Aprovada</span>
+              {% elif status == 'cancelada' %}
+                <span style="background:#e74c3c;color:white;padding:2px 10px;border-radius:10px;">Cancelada</span>
+              {% elif status == 'finalizada' %}
+                <span style="background:#2980f2;color:white;padding:2px 10px;border-radius:10px;">Finalizada</span>
+              {% elif status == 'aguardando' %}
+                <span style="background:#f1c40f;color:#333;padding:2px 10px;border-radius:10px;">Aguardando</span>
+              {% elif status == 'refazer' %}
+                <span style="background:#34495e;color:white;padding:2px 10px;border-radius:10px;">Refazer</span>
+              {% elif status == 'faturado' %}
+                <span style="background:#8e44ad;color:white;padding:2px 10px;border-radius:10px;">Faturado</span>
+              {% else %}
+                <span>{{ venda.status|capitalize }}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginação -->
+  <div class="container-paginacao" id="paginacao-vendas">
+    <!-- Botões de paginação serão inseridos pelo JS -->
+  </div>
+</div>
+<script src="../static/js/vendas.js"></script>
+<script>
+// Tooltip customizado para mostrar obs_vendas em vendas canceladas
+document.addEventListener('DOMContentLoaded', function() {
+  const tabela = document.getElementById('tabela-vendas-body');
+  let tooltip = null;
+
+  tabela.addEventListener('mouseover', function(e) {
+    const td = e.target.closest('td[data-obs-vendas]');
+    if (td) {
+      const obs = td.getAttribute('data-obs-vendas');
+      if (obs) {
+        tooltip = document.createElement('div');
+        tooltip.className = 'custom-tooltip-venda';
+        tooltip.innerText = obs;
+        document.body.appendChild(tooltip);
+        const rect = td.getBoundingClientRect();
+        // Posição inicial à esquerda da célula
+        tooltip.style.left = (rect.left - tooltip.offsetWidth - 12) + 'px';
+        tooltip.style.top = (rect.top + window.scrollY) + 'px';
+      }
+    }
+  });
+
+  tabela.addEventListener('mousemove', function(e) {
+    if (tooltip) {
+      // Mostra tooltip à esquerda do mouse
+      tooltip.style.left = (e.pageX - tooltip.offsetWidth - 16) + 'px';
+      tooltip.style.top = (e.pageY + 8) + 'px';
+    }
+  });
+
+  tabela.addEventListener('mouseout', function(e) {
+    const td = e.target.closest('td[data-obs-vendas]');
+    if (td && tooltip) {
+      tooltip.remove();
+      tooltip = null;
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const btnOnOff = document.getElementById('btn-onoff-sabado');
+  const btnAtualizar = document.getElementById('btn-atualizar-sabado');
+  const statusMsg = document.getElementById('status-sabado-msg');
+  let trabalhoSabado = false;
+
+  // Função para atualizar visual do botão
+  function atualizarVisualBtn() {
+    if (trabalhoSabado) {
+      btnOnOff.textContent = 'ON';
+      btnOnOff.style.background = '#27ae60';
+    } else {
+      btnOnOff.textContent = 'OFF';
+      btnOnOff.style.background = '#e74c3c';
+    }
+  }
+
+  // Carrega valor atual do backend
+  fetch('/api/expediente_sabado')
+    .then(r => r.json())
+    .then(resp => {
+      trabalhoSabado = !!resp.trabalho_sabado;
+      atualizarVisualBtn();
+      statusMsg.textContent = trabalhoSabado ? 'Teremos expediente sábado.' : 'Não teremos expediente sábado.';
+    });
+
+  // Alterna valor ao clicar no botão ON/OFF
+  btnOnOff.addEventListener('click', function() {
+    trabalhoSabado = !trabalhoSabado;
+    atualizarVisualBtn();
+  });
+
+  // Botão atualizar: pergunta e salva no banco
+  btnAtualizar.addEventListener('click', function() {
+    const pergunta = 'Teremos expediente sábado?';
+    if (!confirm(pergunta + (trabalhoSabado ? ' (ON)' : ' (OFF)'))) return;
+    fetch('/api/expediente_sabado', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ trabalho_sabado: trabalhoSabado })
+    })
+    .then(r => r.json())
+    .then(resp => {
+      if (resp.success) {
+        statusMsg.textContent = trabalhoSabado ? 'Teremos expediente sábado.' : 'Não teremos expediente sábado.';
+        alert('Configuração salva!');
+      } else {
+        alert('Erro ao salvar: ' + (resp.msg || ''));
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

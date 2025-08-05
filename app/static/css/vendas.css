@@ -1,0 +1,258 @@
+.container-vendas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.container-filtros-vendas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.10); /* sombra leve */
+}
+
+.container-filtros-vendas input[type="text"],
+.container-filtros-vendas input[type="date"] {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.10); /* sombra leve */
+}
+
+.btn-pesquisar {
+  padding: 8px 15px;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Ações */
+.container-acoes-vendas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.btn-nova-venda,
+.btn-editar-venda {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 150px;
+}
+
+.btn-nova-venda {
+  background-color: #27ae60;
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-editar-venda {
+  background-color: #7f8c8d;
+  color: white;
+}
+
+.btn-reabrir-venda {
+  background-color: #2980f2;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 150px;
+  transition: background 0.2s;
+}
+
+.btn-reabrir-venda:disabled {
+  background-color: #7f8c8d;
+  color: #eee;
+  cursor: not-allowed;
+}
+
+.btn-reabrir-venda:hover:not(:disabled) {
+  background-color: #1761a0;
+}
+
+/* Tabela */
+.container-tabela-vendas {
+  overflow-x: auto;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.15); /* sombra na tabela */
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  font-size: 1rem;
+  min-width: 700px;
+  box-shadow: none; /* sombra já está no container */
+}
+
+thead {
+  background-color: #2c3e50;
+  color: white;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  max-width: 140px; /* ajuste conforme necessário */
+}
+
+.td-corte {
+  position: relative;
+  max-width: 140px; /* ajuste conforme necessário */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: linear-gradient(to right, transparent 80%, #fff 95%);
+}
+
+/* Paginação */
+.container-paginacao {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.container-paginacao button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #ecf0f1;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.container-paginacao .ativo {
+  background-color: #2c3e50;
+  color: white;
+}
+
+/* Visual para o select de filtro de status na tela de vendas */
+#filtro-status {
+  padding: 8px 2px;
+  border: 1.5px solid #2980b9;
+  border-radius: 5px;
+  background: #f7faff;
+  color: #222;
+  font-weight: 500;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+#filtro-status:focus {
+  border-color: #145a8a;
+  box-shadow: 0 0 0 2px #b3dafe;
+  outline: none;
+}
+
+/* ========== RESPONSIVIDADE MOBILE ========== */
+@media (max-width: 768px) {
+  .container-vendas {
+    gap: 12px;
+  }
+
+  .container-filtros-vendas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    font-size: 0.95rem;
+  }
+
+  .container-tabela-vendas {
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.12);
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .btn-fim-expediente{
+   display: none;
+  }
+  table {
+    min-width: 500px;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 6px;
+    font-size: 0.85rem;
+  }
+
+  thead {
+    font-size: 0.9rem;
+  }
+}
+/* Destaca a linha selecionada */
+#tabela-vendas-body tr.selecionada {
+  background: #d6eaff !important;
+  border: 2px solid #2980f2;
+}
+/* Botão Nova venda desabilitado */
+.btn-nova-venda[disabled], .btn-nova-venda.disabled {
+  background-color: #7f8c8d !important;
+  color: #eee !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+.btn-fim-expediente{
+  position: fixed;
+  left: 20vw
+}
+/* Estilo para o botão Fim do expediente */
+.btn-fim-expediente {
+  background: #e67e22;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 22px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.08);
+  outline: none;
+}
+.btn-fim-expediente:hover,
+.btn-fim-expediente:focus {
+  background: #ca6f1e;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(230, 126, 34, 0.18);
+}
+/* Tooltip customizado para obs_vendas */
+.custom-tooltip-venda {
+  position: absolute;
+  z-index: 9999;
+  background: #fffbe6;
+  color: #333;
+  border: 1px solid #e74c3c;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 320px;
+  max-width: 320px;
+  max-height: 180px;
+  box-shadow: 0 2px 12px rgba(44,62,80,0.18);
+  pointer-events: none;
+  white-space: pre-line;
+  text-align: left;
+  word-break: break-word;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

@@ -1,0 +1,189 @@
+.formulario-venda {
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Campos em grid */
+.container-campos,
+.container-detalhes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input, select, textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Observação */
+.container-observacao {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botões */
+.container-botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancelar {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.registrar {
+  background-color: #2ecc71;
+  color: white;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .container-campos,
+  .container-detalhes {
+    grid-template-columns: 1fr;
+  }
+
+  .container-botoes {
+    justify-content: center;
+  }
+
+  button {
+    width: 100px;
+  }
+}
+
+.container-formulario {
+  max-width: 950px;
+  margin: 10px auto;
+  background: #f7f7f7;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+  height: 80vh;
+  overflow-y: auto;
+  /* Para garantir que a barra de rolagem só aparece no container */
+}
+
+/* Cores para o select tipo do cliente */
+select.tipo-cliente-select {
+  transition: background 0.2s, color 0.2s, filter 0.2s;
+}
+select.tipo-cliente-select.verde { background: #27ae60; color: #fff; }
+select.tipo-cliente-select.vermelho { background: #e74c3c; color: #fff; }
+select.tipo-cliente-select:not(.verde):not(.vermelho) { background: #fff; color: #333; }
+
+/* Nunca estilize os option! */
+select option {
+  background: #fff;
+  color: #333;
+}
+
+/* Realce ao passar o mouse: brilho na cor já aplicada */
+select.tipo-cliente-select:hover {
+  filter: brightness(1.25);
+}
+/* Responsivo para produto personalizado */
+.produto-personalizado-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.btn-add-produto {
+  padding: 0 12px;
+  font-size: 20px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: #2980f2;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-add-produto:hover {
+  background: #1a5fb4;
+}
+#personalizado-area {
+  margin-top: 8px;
+  width: 100%;
+}
+.lista-produtos-personalizados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0 0 8px 0;
+  list-style: none;
+}
+.lista-produtos-personalizados li {
+  display: flex;
+  align-items: center;
+  background: #f1f1f1;
+  border-radius: 16px;
+  padding: 4px 12px 4px 10px;
+  font-size: 14px;
+  margin-bottom: 0;
+  box-shadow: 0 1px 2px #0001;
+}
+.lista-produtos-personalizados button {
+  margin-left: 6px;
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+@media (max-width: 600px) {
+  .produto-personalizado-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .btn-add-produto {
+    width: 100%;
+    min-width: unset;
+    border-radius: 6px;
+    margin-top: 4px;
+  }
+  #personalizado-area {
+    margin-top: 4px;
+  }
+  .lista-produtos-personalizados {
+    gap: 4px;
+    font-size: 13px;
+  }
+}

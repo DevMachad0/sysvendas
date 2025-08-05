@@ -1,0 +1,123 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/usuario_edicao.css">
+
+<div class="edicao-usuario-container">
+
+  <!-- Container do formulário -->
+  <div class="formulario-edicao">
+    <h2>Editar usuário</h2>
+    <form method="POST" id="form-edicao-usuario" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div class="form-col">
+          <label>Nome:</label>
+          <input type="text" name="nome" id="input-nome" value="{{ usuario.nome }}">
+
+          <label>E-mail:</label>
+          <input type="email" name="email" id="input-email" value="{{ usuario.email }}">
+
+          <label>Contato:</label>
+          <input type="text" name="contato" id="input-contato" value="{{ usuario.contato }}">
+
+          <div id="campo-posvendas-edicao">
+            <label>Pós vendas:</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <select id="pos-vendas-edicao-select" style="flex:1;">
+                <option value="">Selecione...</option>
+                {% for usuario_pv in pos_vendas_usuarios %}
+                  <option value="{{ usuario_pv.username }}">
+                    {{ usuario_pv.nome or usuario_pv.nome_completo or usuario_pv.username }}
+                  </option>
+                {% endfor %}
+              </select>
+              <button type="button" id="btn-add-pos-vendas-edicao" style="padding:0 12px;font-size:20px;">+</button>
+            </div>
+            <ul id="lista-pos-vendas-edicao" style="margin:8px 0 0 0; padding:0; list-style:none; min-height:28px;"></ul>
+            <input type="hidden" name="pos_vendas" id="pos_vendas-edicao-hidden">
+            <small>Adicione ou remova pós-vendas atribuídos.</small>
+          </div>
+
+          <!-- Campo de foto escondido -->
+          <input type="file" name="foto" id="input-foto" accept="image/*" style="display:none;">
+        </div>
+
+        <div class="form-col">
+          <label>User:</label>
+          <input type="text" name="username" id="input-username" value="{{ usuario.username }}">
+
+          <label>Senhas:</label>
+          <input type="password" name="senha" id="input-senha">
+
+          <label>Tipo:</label>
+          <select name="tipo" id="input-tipo">
+            <option value="admin" {% if usuario.tipo == 'admin' %}selected{% endif %}>Admin</option>
+            <option value="vendedor" {% if usuario.tipo == 'vendedor' %}selected{% endif %}>Vendedor</option>
+            <option value="pos_vendas" {% if usuario.tipo == 'pos_vendas' %}selected{% endif %}>Pós-vendas</option>
+            <option value="faturamento" {% if usuario.tipo == 'faturamento' %}selected{% endif %}>Faturamento</option>
+          </select>
+
+          <label>Status:</label>
+          <select name="status" id="input-status">
+            <option value="ativo" {% if usuario.status == 'ativo' %}selected{% endif %}>ativo</option>
+            <option value="inativo" {% if usuario.status == 'inativo' %}selected{% endif %}>inativo</option>
+            <option value="bloqueado" {% if usuario.status == 'bloqueado' %}selected{% endif %}>bloqueado</option>
+          </select>
+
+          <div id="campo-meta-edicao">
+            <label>Meta do mês:</label>
+            <input type="text" name="meta_mes" id="input-meta-mes" value="{{ usuario.meta_mes }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões -->
+      <div class="botoes-edicao">
+        <button type="button" class="cancelar" onclick="window.history.back()">Cancelar</button>
+        <button type="submit" class="salvar">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Container lateral com foto + gráfico -->
+  <div class="painel-vendedor">
+    <div class="foto-usuario" id="foto-usuario-edicao" style="cursor:pointer;">
+      {% if usuario.foto %}
+        <img id="img-foto-usuario-edicao" src="{{ usuario.foto if usuario.foto.startswith('data:') else 'data:image/png;base64,' ~ usuario.foto }}" alt="Foto" style="width: 100%; height: 100%; border-radius: 50%;">
+      {% else %}
+        <span id="img-foto-usuario-edicao">Foto</span>
+      {% endif %}
+      
+    </div>
+    {% if usuario.tipo == 'vendedor' %}
+      <h3>Gráfico do vendedor</h3>
+      <div class="grafico-vendedor">
+        
+        <div class="row">
+          {{ grafico_vendas_vendedor_individual | safe }}
+        </div>
+
+        <div class="row">
+          {{ grafico_banco_vendedor_individual | safe }}
+        </div>
+
+        <div class="row">
+          {{ grafico_metas_diarias_vendedor_individual | safe }}
+        </div>
+
+        <div class="row">
+          {{ grafico_metas_semanais_vendedor_individual | safe }}
+        </div>
+
+        <div class="row">
+          {{ grafico_prazo_vendedor_individual | safe }}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+<div id="pos_vendas-json" data-posvendas="{{ usuario.pos_vendas | default('') }}"></div>
+
+<script src="../static/js/usuario_edicao.js"></script>
+{% endblock %}

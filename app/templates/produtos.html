@@ -1,0 +1,77 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/produtos.css">
+
+<div class="produtos-wrapper">
+  <div class="container-produtos">
+    <!-- Título -->
+    <h2>Produtos</h2>
+
+    <!-- Formulário de Cadastro -->
+    <form method="POST" class="form-produto">
+      <div class="form-header">
+        <div class="campo">
+          <label>cod:</label>
+          <input type="text" name="codigo" required>
+        </div>
+        <div class="campo nome-produto">
+          <label>Nome do produto:</label>
+          <input type="text" name="nome" required>
+        </div>
+      </div>
+
+      <!-- Tabela de Formas de Pagamento -->
+      <div class="formas-pagamento">
+        {% for i in range(1, 13) %}
+        <div class="linha-forma">
+          <span class="label-forma">{{ 'A/C' if i == 1 else 'B/C' }}:</span>
+          <div class="campo">
+            <label>Valor Total:</label>
+            <input type="number" step="0.01" name="valor_total_{{ i }}">
+          </div>
+          <div class="campo">
+            <label>Parcelas:</label>
+            <input type="text" name="parcelas_{{ i }}"
+              {% if i == 1 %}
+                placeholder="1+1"
+              {% else %}
+                placeholder="Ex: 3x"
+              {% endif %}
+            >
+          </div>
+          <div class="campo">
+            <label>Valor das parcelas:</label>
+            <input type="number" step="0.01" name="valor_parcela_{{ i }}">
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Botões -->
+      <div class="botoes-produto">
+        <button type="submit" class="btn-cadastrar">Cadastrar produto</button>
+        <button type="reset" class="btn-cancelar" style="display:none;">Cancelar</button>
+        <button type="button" class="btn-salvar" style="display:none;">Salvar</button>
+      </div>
+    </form>
+
+    <!-- Lista de Produtos -->
+    <div class="lista-produtos">
+      <h3>Lista de produtos:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>cod</th>
+            <th>produto</th>
+          </tr>
+        </thead>
+        <tbody id="produtos-tbody">
+          <!-- Preenchido via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="../static/js/produtos.js"></script>
+{% endblock %}

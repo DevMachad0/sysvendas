@@ -1,0 +1,330 @@
+{% extends 'layout.html' %}
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/editar_venda.css">
+
+<div class="container-formulario">
+<form class="formulario-venda" method="POST" id="form-editar-venda" autocomplete="off">
+  <input oninput="this.value = this.value.toUpperCase()" type="hidden" name="numero_da_venda" value="{{ venda.numero_da_venda }}">
+  <h2>Editar venda</h2>
+  <h3>Vendedor: <span>{{ venda.vendedor }}</span></h3>
+  <div></div>
+  <!-- Container de campos principais -->
+  <div class="container-campos">
+    <div class="campo">
+      <label>Nome do cliente:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="nome" value="{{ venda.nome }}" required
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Nome do contato:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="nome_do_contato" value="{{ venda.nome_do_contato }}" required
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>CEP:</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input oninput="this.value = this.value.toUpperCase()" type="text" name="cep" value="{{ venda.cep }}" required
+          {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+        <button type="button" onclick="window.open('https://buscacepinter.correios.com.br/app/endereco/index.php', '_blank')" title="Buscar no site dos Correios" style="padding: 0 12px; font-size: 10px;">❔</button>
+      </div>
+    </div>
+    <div class="campo">
+      <label>Rua:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="endereco_rua" value="{{ venda.endereco['rua'] if venda.endereco }}"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Bairro:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="endereco_bairro" value="{{ venda.endereco['bairro'] if venda.endereco }}"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Número:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="endereco_numero" value="{{ venda.endereco['numero'] if venda.endereco }}"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Cidade:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="endereco_cidade" value="{{ venda.endereco['cidade'] if venda.endereco }}"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Estado:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="endereco_estado" value="{{ venda.endereco['estado'] if venda.endereco }}"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>E-mail:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="email" value="{{ venda.email }}" required
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Telefones:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="fones" value="{{ venda.fones }}" required
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>CNPJ ou CPF:</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input oninput="this.value = this.value.toUpperCase()" type="text" name="cnpj_cpf" value="{{ venda.cnpj_cpf }}" required
+          {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+        <button type="button" onclick="window.open('https://dfe-portal.svrs.rs.gov.br/NFE/CCC', '_blank')" title="Consultar no Siscred" style="padding: 0 12px; font-size: 10px;">❔</button>
+      </div>
+    </div>
+    <div class="campo">
+      <label>Razão Social:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="razao_social" value="{{ venda.razao_social }}"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Inscrição Estadual/Identidade:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="inscricao_estadual_identidade" value="{{ venda.inscricao_estadual_identidade }}"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Produto:</label>
+      <div id="produto-container-editar" class="produto-personalizado-container">
+        <select id="produto" name="produto" required>
+          <option value="{{ venda.produto }}">{{ venda.produto }}</option>
+          {% for produto_nome in info_vendas %}
+            {% if venda.produto != produto_nome %}
+              <option value="{{ produto_nome }}">{{ produto_nome }}</option>
+            {% endif %}
+          {% endfor %}
+          <option value="Personalizado">Personalizado</option>
+        </select>
+        <button type="button" id="btn-add-produto-editar" style="display:none;" class="btn-add-produto">+</button>
+      </div>
+      <div id="personalizado-area-editar" style="display:none;">
+        <ul id="lista-produtos-personalizados-editar" class="lista-produtos-personalizados"></ul>
+        <input oninput="this.value = this.value.toUpperCase()" type="hidden" name="produtos_personalizados" id="produtos-personalizados-hidden-editar">
+        <small id="personalizado-info-editar">Adicione até 3 produtos personalizados.</small>
+      </div>
+    </div>
+    <!-- NOVO CAMPO: Quantidade de acessos -->
+    <div class="campo">
+      <label>Quantidade de acessos:</label>
+      <input type="number" min="1" id="quantidade-acessos-editar" name="quantidade_acessos"
+        value="{{ venda.quantidade_acessos or 2 }}"
+        style="width: 80px;"
+        {% if user_tipo == 'faturamento' %}readonly disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+      <small style="color:#888;">Mínimo 2 acessos.</small>
+    </div>
+    <div class="campo">
+      <label>Valor da Tabela:</label>
+      <input oninput="this.value = this.value.replace(/[^0-9.,]/g, '').toUpperCase()" type="text" required id="valor_tabela" name="valor_tabela" step="0.01" value="{{ venda.valor_tabela }}"
+        {% if not ((venda.desconto_live and user_tipo in ['admin', 'pos_vendas', 'faturamento']) or user_tipo == 'pos_vendas') %}readonly style="pointer-events: none; background-color: #f5f5f5;" tabindex="-1" onkeydown="return false;" onpaste="return false;"{% endif %}>
+    </div>
+    {% if user_tipo in ['admin', 'pos_vendas', 'faturamento'] %}
+    <div class="campo" id="campo-desconto-live-editar" style="margin-top:-8px;">
+      <label style="font-weight:normal;">
+        <input type="checkbox" id="desconto_live" name="desconto_live" {% if venda.desconto_live %}checked{% endif %} style="margin-right:4px;">
+        Desconto?
+      </label>
+      <div id="motivo-desconto-live-area">
+        <label style="font-weight:normal;">Motivo do desconto:</label>
+        <input oninput="this.value = this.value.toUpperCase()" type="text" id="motivo_desconto_live" name="motivo_desconto_live" value="{{ venda.motivo_desconto_live or '' }}" style="width:90%;">
+      </div>
+      <small style="color:#888;">Justifique o desconto.</small>
+    </div>
+    <script>
+      // Exibe/oculta o campo motivo e habilita/desabilita o valor da tabela
+      document.addEventListener('DOMContentLoaded', function() {
+        var cbLive = document.getElementById('desconto_live');
+        var areaMotivo = document.getElementById('motivo-desconto-live-area');
+        var valorTabela = document.getElementById('valor_tabela');
+        function toggleDescontoLive() {
+          if (!cbLive || !areaMotivo || !valorTabela) return;
+          if (cbLive.checked) {
+            areaMotivo.style.display = '';
+            valorTabela.removeAttribute('readonly');
+            valorTabela.style.pointerEvents = '';
+            valorTabela.style.backgroundColor = '';
+            valorTabela.tabIndex = 0;
+            valorTabela.onkeydown = null;
+            valorTabela.onpaste = null;
+          } else if ("{{ user_tipo }}" == "pos_vendas") {
+            areaMotivo.style.display = 'none';
+            valorTabela.removeAttribute('readonly');
+            valorTabela.style.pointerEvents = '';
+            valorTabela.style.backgroundColor = '';
+            valorTabela.tabIndex = 0;
+            valorTabela.onkeydown = null;
+            valorTabela.onpaste = null;
+          } else {
+            areaMotivo.style.display = 'none';
+            valorTabela.setAttribute('readonly', 'readonly');
+            valorTabela.style.pointerEvents = 'none';
+            valorTabela.style.backgroundColor = '#f5f5f5';
+            valorTabela.tabIndex = -1;
+            valorTabela.onkeydown = function(){return false;};
+            valorTabela.onpaste = function(){return false;};
+          }
+        }
+        if (cbLive) {
+          cbLive.addEventListener('change', toggleDescontoLive);
+        }
+        toggleDescontoLive();
+      });
+    </script>
+    {% endif %}
+    <div class="campo" style="display:flex;align-items:flex-start;gap:12px;">
+      <div style="flex:1;display: flex;flex-direction: column;align-items: flex-start;align-content: center;flex-wrap: wrap;">
+        <label>Condições:</label>
+        <select id="condicoes" name="condicoes" required style="min-width:220px;width:auto;max-width:100%;">
+          {% set produto_atual = venda.produto %}
+          {% set condicoes_do_produto = info_vendas.get(produto_atual, []) %}
+          {% if venda.condicoes %}
+            <option value="{{ venda.condicoes }}" selected>{{ venda.condicoes }}</option>
+          {% endif %}
+          {% for cond in condicoes_do_produto %}
+            {% if cond.condicao != venda.condicoes %}
+              <option value="{{ cond.condicao }}">{{ cond.condicao }}</option>
+            {% endif %}
+          {% endfor %}
+          {% if not venda.condicoes %}
+            <option value="">Selecione uma condição</option>
+          {% endif %}
+        </select>
+      </div>
+      <!-- NOVO: Campo dinâmico Condições da Venda -->
+      <div id="condicoes-venda-container-editar" style="display:none;flex:1;">
+        <label>Condições da Venda:</label>
+        <select id="condicoes-venda-select-editar" name="condicoes_venda">
+          <option value="">Selecione</option>
+          <option value="avista" {% if venda.condicoes_venda == 'avista' %}selected{% endif %}>À vista</option>
+          <option value="entrada_parcela" {% if venda.condicoes_venda == 'entrada_parcela' %}selected{% endif %}>Entrada + Parcela</option>
+        </select>
+      </div>
+    </div>
+    <!-- NOVO: Campo Valor da venda (só para à vista) -->
+    <div class="campo" id="campo-valor-venda-editar" style="display:none;">
+      <label>Valor da venda:</label>
+      <input type="text" id="valor_venda_avista_editar" name="valor_venda_avista" value="{{ venda.valor_venda_avista or '' }}">
+    </div>
+    <div class="campo" id="campo-entrada-editar">
+      <label>Entrada:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" id="valor_entrada_editar" name="valor_entrada" value="{{ venda.valor_entrada or '0' }}"
+        {% if user_tipo == 'vendedor' and venda.status != 'Refazer' %}
+          readonly style="pointer-events: none; background-color: #f5f5f5;"
+        {% elif user_tipo not in ['admin', 'pos_vendas', 'faturamento', 'vendedor'] %}
+          readonly style="pointer-events: none; background-color: #f5f5f5;"
+        {% endif %}>
+    </div>
+    <div class="campo" id="campo-parcela-editar">
+      <label>Valor das Parcelas:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" id="valor_parcelas" name="valor_parcelas" value="{{ venda.valor_parcelas }}" required
+        {% if user_tipo != 'admin' and user_tipo != 'pos_vendas' and user_tipo != 'faturamento' %}readonly style="pointer-events: none; background-color: #f5f5f5;"{% endif %}>
+      {% if user_tipo != 'vendedor' %}
+      <label style="margin-left:12px; display:inline-flex; align-items:center;">
+        <input oninput="this.value = this.value.toUpperCase()" type="checkbox" id="desconto_autorizado" name="desconto_autorizado" style="margin-right:4px;"
+          {% if venda.desconto_autorizado %}checked{% endif %}
+          {% if user_tipo != 'admin' and user_tipo != 'pos_vendas' and user_tipo != 'faturamento' %}disabled{% endif %}>
+        desconto autorizado?
+      </label>
+      {% endif %}
+    </div>
+    <div class="campo">
+      <label>Valor Real da Venda:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="valor_real" id="valor_real" value="{{ venda.valor_real or '' }}"
+        {% if user_tipo != 'admin' and user_tipo != 'pos_vendas' and user_tipo != 'faturamento' %}readonly style="pointer-events: none; background-color: #f5f5f5;"{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Data prestação inicial:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="date" name="data_prestacao_inicial" value="{{ venda.data_prestacao_inicial }}">
+    </div>
+    <div class="campo">
+      <label>Tipo envio de boleto:</label>
+      <input type="text" name="tipo_envio_boleto" oninput="this.value = this.value.toUpperCase()" value="E-mail" readonly>
+    </div>
+    <div class="campo">
+      <label>Tipo de remessa:</label>
+      <input oninput="this.value = this.value.toUpperCase()" type="text" name="tipo_remessa" value="{{ venda.tipo_remessa }}">
+    </div>
+    <div class="campo">
+      <label>Tipo do cliente:</label>
+      <select name="tipo_cliente" id="tipo-cliente-editar" class="tipo-cliente-select" style="width: 140px;"
+        {% if user_tipo == 'vendedor' %}disabled style="background:#f5f5f5;pointer-events:none;"{% endif %}>
+        <option value="">Selecione</option>
+        <option value="verde" {% if venda.tipo_cliente == 'verde' %}selected{% endif %}>Verde</option>
+        <option value="vermelho" {% if venda.tipo_cliente == 'vermelho' %}selected{% endif %}>Vermelho</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label>Status:</label>
+      <select name="status" id="status-editar" class="status-select" style="width: 140px;">
+        <option value="Aguardando" {% if venda.status == 'Aguardando' %}selected{% endif %}>Aguardando</option>
+        <option value="Aprovada" {% if venda.status == 'Aprovada' %}selected{% endif %}>Aprovada</option>
+        <option value="Faturado" {% if venda.status == 'Faturado' %}selected{% endif %}>Faturado</option>
+        <option value="Cancelada" {% if venda.status == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+        <option value="Refazer" {% if venda.status == 'Refazer' %}selected{% endif %}>Refazer</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label>Observação do Pedido:</label>
+      <textarea name="obs" rows="3">{{ venda.obs }}</textarea>
+    </div>
+    {% set pode_ver_campos_extra = user_tipo in ['admin', 'pos_vendas', 'faturamento'] %}
+    {% set pode_editar_campos_extra = user_tipo in ['admin', 'pos_vendas', 'faturamento'] %}
+    {% if pode_ver_campos_extra %}
+    <div class="campo">
+      <label>Caminho dos arquivos:</label>
+      <input type="text" name="caminho_arquivos" value="{{ venda.caminho_arquivos or '' }}"
+        {% if not pode_editar_campos_extra %}readonly{% endif %}>
+    </div>
+    <div class="campo">
+      <label>Observação Interna:</label>
+      <textarea name="obs_vendas" rows="2"
+        {% if not pode_editar_campos_extra %}readonly{% endif %}>{{ venda.obs_vendas or '' }}</textarea>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Botões -->
+  <div class="container-botoes">
+    <button type="button" id="btn-copiar-dados" style="background:#2980b9;color:#fff;margin-right:12px;display:none;">Copiar dados</button>
+    <button type="button" class="cancelar" onclick=history.back()>Cancelar</button>
+    <button type="submit" class="registrar" id="btn-salvar-editar">Salvar alterações</button>
+  </div>
+</form>
+
+<!-- Tabela de logs -->
+<div class="container-logs" style="margin-top:30px;">
+  <h3>Logs da venda</h3>
+  <table style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th style="border:1px solid #ccc;padding:6px;">Data/Hora</th>
+        <th style="border:1px solid #ccc;padding:6px;">Quem</th>
+        <th style="border:1px solid #ccc;padding:6px;">Movimentação</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in venda.logs %}
+      <tr>
+        <td style="border:1px solid #ccc;padding:6px;">{{ log.data_hora }}</td>
+        <td style="border:1px solid #ccc;padding:6px;">{{ log.quem }}</td>
+        <td style="border:1px solid #ccc;padding:6px;">{{ log.modificacao }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+
+<div id="produtos-json" data-produtos='{{ info_vendas | tojson | safe }}'></div>
+<script>
+  // Disponibiliza o vendedor atribuído no JS
+  window.vendaVendedor = "{{ venda.vendedor|e }}";
+  // Disponibiliza a condição selecionada do banco para o JS
+  window.condicaoSelecionadaBanco = "{{ venda.condicoes|e }}";
+  window.condicoesVendaBanco = "{{ venda.condicoes_venda or '' }}";
+  window.valorVendaAvistaBanco = "{{ venda.valor_venda_avista or '' }}";
+  window.valorEntradaBanco = "{{ venda.valor_entrada or '' }}";
+  window.quantidadeAcessosBanco = "{{ venda.quantidade_acessos or 2 }}";
+  window.valor_tabela= "{{ venda.valor_tabela or '' }}";
+</script>
+<script src="../static/js/editar_venda.js"></script>
+<script src="../static/js/acessos_extra.js"></script>
+{% endblock %}
+

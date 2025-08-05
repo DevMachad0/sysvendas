@@ -1,0 +1,244 @@
+/* Ativado quando <body class="night-mode"> está presente */
+
+body.night-mode,
+
+.night-mode .container-lateral {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode .container-direita {
+  background: #181c23 !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode .container-topo {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border-bottom: 1px solid #222 !important;
+}
+
+.night-mode .container-conteudo {
+  background: #20242b !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode .menu-lateral a {
+  color: #e0e0e0 !important;
+}
+
+.night-mode .menu-lateral a:hover,
+.night-mode .menu-lateral a:focus {
+  background: #2c3440 !important;
+  color: #fff !important;
+}
+
+.night-mode .btn-sair button,
+.night-mode .btn-sair-mobile button {
+  background: #2c3440 !important;
+  color: #fff !important;
+}
+
+.night-mode .versao-sistema {
+  color: #aaa !important;
+}
+
+.night-mode table,
+.night-mode th,
+.night-mode td {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
+
+.night-mode input,
+#produto,
+#condicoes,
+#condicoes-venda-select,
+#btn-lista-telefones,
+#telefone-pais-select,
+#btn-lista-emails,
+#emails-list,
+#notificacoes-lista,
+#telefones-list,
+.night-mode textarea {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+  
+}
+.container-expediente-sabado,
+.night-mode .container-expediente-sabado {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+}
+.form-cadastro,
+.night-mode .form-cadastro {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+}
+.container-produtos,
+.night-mode .container-produtos {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+}
+h2,
+.night-mode h2 {
+  color: #e0e0e0 !important;
+  margin-bottom: 5px;
+}
+h3,
+.night-mode h3 {
+  color: #e0e0e0 !important;
+  margin-bottom: 10px;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+
+.form-relatorio,
+.night-mode .form-relatorio {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+}
+#menu-graficos ul,
+.night-mode #menu-graficos ul {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+}
+
+.container-formulario,
+.night-mode .container-formulario {
+  background: #20242b !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+}
+
+.container-logs,
+.night-mode .container-logs {
+  background: #20242b !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+  margin-top: 15px;
+}
+.night-mode .container-tabela-vendas {
+  background: #232a34 !important;
+}
+
+.night-mode .custom-tooltip-venda {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border-color: #e67e22 !important;
+}
+
+.night-mode .container-filtros-vendas {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode .container-paginacao button,
+.night-mode .usuarios-paginacao button {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+}
+
+.night-mode .container-paginacao .ativo,
+.night-mode .usuarios-paginacao .ativo {
+  background: #e67e22 !important;
+  color: #fff !important;
+}
+
+.night-mode .notificacoes .icone-notificacao {
+  color: #f1c40f !important;
+}
+
+.night-mode .usuario .icone-usuario {
+  color: #e0e0e0 !important;
+}
+
+.night-mode .container-topo #btn-night-mode {
+  color: #f1c40f !important;
+  background: none !important;
+}
+
+.night-mode .container-topo #btn-night-mode:hover {
+  filter: brightness(1.2);
+}
+
+.night-mode .container-campos,
+.night-mode .container-detalhes {
+  background: #232a34 !important;
+}
+
+.night-mode .formulario-venda {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode .container-observacao {
+  background: #232a34 !important;
+}
+
+.night-mode .container-botoes button {
+  background: #2c3440 !important;
+  color: #fff !important;
+}
+
+.night-mode .container-botoes .cancelar {
+  background: #c0392b !important;
+}
+
+.night-mode .container-botoes .registrar {
+  background: #27ae60 !important;
+}
+
+.night-mode .container-configs,
+.night-mode .config-email-metas,
+.night-mode .config-banco {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode .secao-config label,
+.night-mode .secao-config h3 {
+  color: #e0e0e0 !important;
+}
+
+.night-mode .container-metas-vendedor {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+}
+
+.night-mode .tabela-logs,
+.night-mode .tabela-logs th,
+.night-mode .tabela-logs td {
+  background: #232a34 !important;
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
+
+/* Scrollbar escuro para modo noturno (Chrome, Edge, Safari) */
+body.night-mode ::-webkit-scrollbar {
+  width: 10px;
+  background: #232a34;
+}
+body.night-mode ::-webkit-scrollbar-thumb {
+  background: #444a55;
+  border-radius: 6px;
+}
+body.night-mode ::-webkit-scrollbar-thumb:hover {
+  background: #666c77;
+}
+body.night-mode ::-webkit-scrollbar-corner {
+  background: #232a34;
+}
+
+/* Scrollbar escuro para Firefox */
+body.night-mode, .night-mode * {
+  scrollbar-color: #444a55 #232a34;
+  scrollbar-width: thin;
+}

@@ -1,0 +1,260 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/configs.css">
+
+<div class="container-configs">
+  <!-- Container Esquerdo -->
+  <div class="config-email-metas">
+    <h2>Configurações</h2>
+
+    <section class="secao-config">
+      <h3>Configurações de E-mail:</h3>
+      <label>SMTP:</label>
+      <input type="text" name="smtp" id="input-smtp" placeholder="ex: smtp.exemplo.com" required>
+
+      <label>Porta:</label>
+      <input type="text" name="porta" id="input-porta" placeholder="ex: 587" required>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="flex:1;">
+          <label>E-mail SMTP (principal):</label>
+          <input type="email" name="email_smtp" id="input-email-smtp" placeholder="ex: vendas@empresa.com" required>
+        </div>
+        <div style="display:flex; align-items:center; gap:4px;">
+          <input type="checkbox" id="checkbox-email-smtp-principal" name="email_smtp_principal_ativo" value="true">
+          <label for="checkbox-email-smtp-principal" style="margin:0;">Ativo</label>
+        </div>
+        <button type="button" id="btn-testar-email" style="height:32px;margin-left:8px;">Testar E-mail</button>
+      </div>
+      <div id="resultado-teste-email" style="margin-top:6px;font-size:14px;color:#2980b9;"></div>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="flex:1;">
+          <label>E-mail SMTP (secundário):</label>
+          <input type="email" name="email_smtp_secundario" id="input-email-smtp-secundario" placeholder="ex: suporte@empresa.com" required>
+        </div>
+        <div style="display:flex; align-items:center; gap:4px;">
+          <input type="checkbox" id="checkbox-email-smtp-secundario" name="email_smtp_secundario_ativo" value="true">
+          <label for="checkbox-email-smtp-secundario" style="margin:0;">Ativo</label>
+        </div>
+        <button type="button" id="btn-testar-email-secundario" style="height:32px;margin-left:8px;">Testar E-mail</button>
+      </div>
+      <div id="resultado-teste-email-secundario" style="margin-top:6px;font-size:14px;color:#2980b9;"></div>
+
+      <label>Senha do E-mail SMTP:</label>
+      <input type="password" name="senha_email_smtp" id="input-senha-email-smtp" placeholder="Senha do e-mail SMTP" required>
+
+      <label>E-mail cópia:</label>
+      <div class="campo-copia">
+        <input type="email" name="email_copia" id="input-email-copia" placeholder="ex: suporte@empresa.com">
+        <button class="btn-add-copia" type="button" id="btn-add-copia">+</button>
+      </div>
+      <ul id="lista-emails-copia" style="margin:6px 0 0 0; padding:0; list-style:none;"></ul>
+    </section>
+
+    <section class="secao-config">
+      <h3>Configurações de Meta:</h3>
+      <label>Meta da empresa:</label>
+      <input type="number" name="meta_empresa" placeholder="R$ 0,00">
+          <div class="botoes-principais">
+      <button class="btn-salvar" type="button" id="btn-salvar-geral">Salvar</button>
+    </div>
+    </section>
+
+    <!-- NOVO CONTAINER EM LINHA PARA METAS DIÁRIA/SEMANA POR VENDEDOR -->
+    <div class="container-metas-vendedor" style="display: flex; align-items: flex-end; gap: 24px; margin-bottom: 24px;">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; gap: 8px; align-items: flex-end;">
+          <div>
+            <label for="meta-dia-quantidade">Meta do Dia:</label>
+            <input type="number" id="meta-dia-quantidade" name="meta-dia-quantidade" placeholder="Qtd" style="width:70px;">
+          </div>
+          <div>
+            <label for="meta-dia-valor">Valor:</label>
+            <input type="number" id="meta-dia-valor" name="meta-dia-valor" placeholder="R$ 0,00" style="width:90px;">
+          </div>
+        </div>
+        <div>
+          <label for="meta-semana">Meta da Semana:</label>
+          <input type="number" id="meta-semana" name="meta-semana" placeholder="R$ 0,00" style="width:120px;">
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: flex-end; gap: 8px;">
+          <div>
+            <label for="select-vendedor-meta">Vendedor:</label>
+            <select id="select-vendedor-meta" name="select-vendedor-meta" style="width:140px; margin-bottom: 19px;">
+              <option value="">Selecione...</option>
+            </select>
+            <button class="btn-salvar" type="button" id="btn-atualizar-meta-vendedor" style="height:32px;">Atualizar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- FIM DO NOVO CONTAINER -->
+
+
+
+    <!-- NOVO: Container Expediente Sábado -->
+    <div id="container-expediente-sabado" style="margin: 32px 0 0 0; display: flex; align-items: center; gap: 18px; border-radius: 8px; padding: 18px 24px; box-shadow: 0 2px 8px #eee;">
+      <span style="font-weight:600;">Expediente sábado:</span>
+      <button id="btn-onoff-sabado" style="width:60px;height:32px;border-radius:16px;border:none;cursor:pointer;background:#e74c3c;color:#fff;font-weight:bold;transition:background 0.2s;">OFF</button>
+      <button id="btn-atualizar-sabado" style="margin-left:16px;background:#2980b9;color:#fff;border:none;border-radius:6px;padding:8px 18px;font-weight:600;cursor:pointer;">Atualizar</button>
+      <span id="status-sabado-msg" style="margin-left:18px;color:#888;font-size:15px;"></span>
+    </div>
+    <!-- FIM NOVO CONTAINER -->
+  </div>
+
+  <!-- Container Direito -->
+  <div class="config-banco">
+    <section class="secao-config">
+      <h3>Banco de uso (vendedor):</h3>
+
+      <label>Selecione o vendedor :</label>
+      <select name="vendedor" id="select-vendedor-limite">
+        <option value="">Selecione...</option>
+        <!-- opções dinâmicas -->
+      </select>
+
+      <label>Limite:</label>
+      <input type="number" name="limite" id="input-limite" placeholder="ex: 5000">
+      <div class="botoes-secundarios">
+        <button class="btn-salvar" type="button" id="btn-salvar-limite">Atualizar</button>
+      </div>
+
+      <h4>Limites cadastrados:</h4>
+      <ul id="lista-limites-vendedores" style="margin-top:10px; margin-bottom: 10px;"></ul>
+      <h3>Valores de acesso extra:</h3>
+      <label for="input-valor-acesso-nova-venda">Valor por acesso extra (nova venda):</label>
+      <input type="number" id="input-valor-acesso-nova-venda" step="0.01" placeholder="Ex: 50.00">
+      <label for="input-valor-acesso-atualizacao">Valor por acesso extra (atualização):</label>
+      <input type="number" id="input-valor-acesso-atualizacao" step="0.01" placeholder="Ex: 30.00">
+      <button class="btn-salvar" type="button" id="btn-salvar-valor-acesso" style="margin-top:10px;">Salvar valores de acesso</button>
+    
+    </section>
+    <!-- FIM NOVO CONTAINER -->
+
+  </div>
+</div>
+<script src="../static/js/configs.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Permite marcar apenas um checkbox de e-mail SMTP ativo por vez
+  const cbPrincipal = document.getElementById('checkbox-email-smtp-principal');
+  const cbSecundario = document.getElementById('checkbox-email-smtp-secundario');
+  cbPrincipal && cbPrincipal.addEventListener('change', function() {
+    if (cbPrincipal.checked) cbSecundario.checked = false;
+  });
+  cbSecundario && cbSecundario.addEventListener('change', function() {
+    if (cbSecundario.checked) cbPrincipal.checked = false;
+  });
+
+  // --- ENVIO DO FORMULÁRIO DE CONFIGURAÇÕES ---
+  const btnSalvar = document.getElementById('btn-salvar-geral');
+  btnSalvar && btnSalvar.addEventListener('click', function() {
+    // Coleta todos os campos
+    const smtp = document.getElementById('input-smtp').value;
+    const porta = document.getElementById('input-porta').value;
+    const email_smtp = document.getElementById('input-email-smtp').value;
+    const email_smtp_principal_ativo = document.getElementById('checkbox-email-smtp-principal').checked;
+    const email_smtp_secundario = document.getElementById('input-email-smtp-secundario').value;
+    const email_smtp_secundario_ativo = document.getElementById('checkbox-email-smtp-secundario').checked;
+    const senha_email_smtp = document.getElementById('input-senha-email-smtp').value;
+    const email_copia = document.getElementById('input-email-copia').value;
+    const meta_empresa = document.querySelector('input[name="meta_empresa"]').value;
+
+    // Monta as strings já no formato desejado
+    const email_smtp_principal = email_smtp ? `${email_smtp}:${email_smtp_principal_ativo}` : "";
+    const email_smtp_secundario_str = email_smtp_secundario ? `${email_smtp_secundario}:${email_smtp_secundario_ativo}` : "";
+
+    fetch('/api/configs/geral', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        smtp,
+        porta,
+        email_smtp_principal,
+        email_smtp_secundario: email_smtp_secundario_str,
+        senha_email_smtp,
+        email_copia,
+        meta_empresa
+      })
+    })
+    .then(r => r.json())
+    .then(resp => {
+      if (resp.success) {
+        alert('Configurações salvas com sucesso!');
+        window.location.reload();
+      } else {
+        alert('Erro ao salvar configurações.');
+      }
+    });
+  });
+
+  // --- CARREGAR CONFIGURAÇÕES EXISTENTES ---
+  fetch('/api/configs/geral')
+    .then(r => r.json())
+    .then(cfg => {
+      if (cfg.smtp) document.getElementById('input-smtp').value = cfg.smtp;
+      if (cfg.porta) document.getElementById('input-porta').value = cfg.porta;
+      if (cfg.email_smtp) document.getElementById('input-email-smtp').value = cfg.email_smtp;
+      if (typeof cfg.email_smtp_principal_ativo !== "undefined") cbPrincipal.checked = !!cfg.email_smtp_principal_ativo;
+      if (cfg.email_smtp_secundario) document.getElementById('input-email-smtp-secundario').value = cfg.email_smtp_secundario;
+      if (typeof cfg.email_smtp_secundario_ativo !== "undefined") cbSecundario.checked = !!cfg.email_smtp_secundario_ativo;
+      if (cfg.senha_email_smtp) document.getElementById('input-senha-email-smtp').value = cfg.senha_email_smtp;
+      if (cfg.email_copia) document.getElementById('input-email-copia').value = cfg.email_copia;
+      if (cfg.meta_empresa) document.querySelector('input[name="meta_empresa"]').value = cfg.meta_empresa;
+    });
+
+  // Expediente sábado - controle ON/OFF e salvar
+  const btnOnOff = document.getElementById('btn-onoff-sabado');
+  const btnAtualizar = document.getElementById('btn-atualizar-sabado');
+  const statusMsg = document.getElementById('status-sabado-msg');
+  if (!btnOnOff || !btnAtualizar) return;
+  let trabalhoSabado = false;
+
+  function atualizarVisualBtn() {
+    if (trabalhoSabado) {
+      btnOnOff.textContent = 'ON';
+      btnOnOff.style.background = '#27ae60';
+    } else {
+      btnOnOff.textContent = 'OFF';
+      btnOnOff.style.background = '#e74c3c';
+    }
+  }
+
+  fetch('/api/expediente_sabado')
+    .then(r => r.json())
+    .then(resp => {
+      trabalhoSabado = !!resp.trabalho_sabado;
+      atualizarVisualBtn();
+      statusMsg.textContent = trabalhoSabado ? 'Teremos expediente sábado.' : 'Não teremos expediente sábado.';
+    });
+
+  btnOnOff.addEventListener('click', function() {
+    trabalhoSabado = !trabalhoSabado;
+    atualizarVisualBtn();
+  });
+
+  btnAtualizar.addEventListener('click', function() {
+    const pergunta = 'Teremos expediente sábado?';
+    if (!confirm(pergunta + (trabalhoSabado ? ' (ON)' : ' (OFF)'))) return;
+    fetch('/api/expediente_sabado', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ trabalho_sabado: trabalhoSabado })
+    })
+    .then(r => r.json())
+    .then(resp => {
+      if (resp.success) {
+        statusMsg.textContent = trabalhoSabado ? 'Teremos expediente sábado.' : 'Não teremos expediente sábado.';
+        alert('Configuração salva!');
+      } else {
+        alert('Erro ao salvar: ' + (resp.msg || ''));
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

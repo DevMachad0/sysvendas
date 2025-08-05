@@ -1,0 +1,374 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/inicio.css">
+<style>
+/* Esconde dashboard e mostra só download no mobile */
+@media (max-width: 768px) {
+  #container #cabecalho > .form-filtro,
+  #menu-graficos,
+  #grafico-container {
+    display: none !important;
+  }
+  #container #cabecalho > #mostrar-opcoes-pdf {
+    display: block !important;
+    width: 100%;
+  }
+  #container #cabecalho > #download {
+    display: none !important;
+    width: 100%;
+  }
+  #container #cabecalho {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #container #cabecalho > #download.mostrar {
+    display: block !important;
+  }
+}
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<div id="container">
+  <div id="cabecalho">
+    <div id="titulo">
+      <h2>Dashboard</h2>
+    </div>
+    <form class="form-filtro" method="get" action="/">
+      <label for="mes">Mês:</label>
+      <select name="mes" id="mes">
+        {% for i in range(1, 13) %}
+          <option value="{{ i }}" {% if mes == i %}selected{% endif %}>{{ i }}</option>
+        {% endfor %}
+      </select>
+      <label for="ano">Ano:</label>
+      <select name="ano" id="ano">
+        {% for a in range(2023, 2026) %}
+          <option value="{{ a }}" {% if ano == a %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Filtrar</button>
+    </form>
+    <button id="mostrar-opcoes-pdf" class="botao-abrir-download">📂 Quero baixar PDF</button>
+    <div id="download" style="display: none;">
+      <form class="form-relatorio" method="POST" id="form-graficos" onsubmit="return false;">
+        <div class="form-opcoes-download">
+          <div class="checklist-graficos">
+            <span>Escolha os gráficos:</span>
+            <!-- Botões selecionar/desmarcar todos -->
+            <div style="margin-bottom: 8px;">
+              <button type="button" id="selecionar-todos-graficos" style="margin-right:4px;">Selecionar todos</button>
+              <button type="button" id="desmarcar-todos-graficos">Desmarcar todos</button>
+            </div>
+            <div class="lista-checkboxes">
+              {% for key, label in {
+                'vendas_geral': 'Vendas Geral',
+                'vendas_vendedor': 'Vendas Mensais por Vendedor',
+                'vendas_diarias': 'Vendas Diárias por Vendedor',
+                'vendas_diarias_linhas': 'Vendas Diárias Linhas',
+                'quantidade_vendas_diarias': 'Quantidade de Vendas Diárias',
+                'vendas_fim_de_semana': 'Vendas no Fim de Semana por Vendedor',
+                'quantidade_vendas_fim_de_semana': 'Quantidade de Vendas no Fim de Semana por Vendedor',
+                'metas_vendedor': 'Metas Mensais dos Vendedores',
+                'metas_semanais_vendedor': 'Metas Semanais dos Vendedores',
+                'metas_diarias_vendedor': 'Metas Diárias dos Vendedores',
+                'banco_vendedores': 'Banco dos Vendedores',
+                'status_vendas_vendedor': 'Status das Vendas',
+                'prazo_vendas_vendedor': 'Vendas por Prazo e Vendedor',
+                'verdes_vermelhos_geral': 'Tipos de Clientes Geral',
+                'verdes_vermelhos_vendedor': 'Tipos de Clientes por Vendedor',
+                'tipo_vendas_geral': 'Tipo Vendas Geral',
+                'tipo_vendas_por_vendedor': 'Tipo Vendas por Vendedor',
+                'produtos_mais_vendidos': 'Produtos mais Vendidos',
+                'mapa_vendas_por_estado': 'Mapa Vendas por Estado'
+              }.items() %}
+              <label>
+                <input type="checkbox" name="graficos" value="{{ key }}" checked> {{ label }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+    
+          <div class="input-nome-arquivo">
+            <label for="nome">Nome do arquivo (sem extensão):</label>
+            <input type="text" name="nome" id="nome" placeholder="relatorio_vendas" required>
+          </div>
+    
+          <div class="botao-container">
+            <button class="botao-download" type="button" id="botao-download">📄 Baixar PDF</button>
+          </div>
+        </div>
+      </form>
+      <div id="msg-download-pdf" style="color:red; margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <!-- MENU DE GRÁFICOS -->
+  <div id="menu-graficos">
+    <ul>
+      <li class="tab-menu active" data-tab="vendas_geral">Vendas Geral</li>
+      <li class="tab-menu" data-tab="vendas_vendedor">Vendas Mensais por Vendedor</li>
+      <li class="tab-menu" data-tab="vendas_diarias">Vendas Diárias por Vendedor</li>
+      <li class="tab-menu" data-tab="vendas_diarias_linhas">Vendas Diárias Linhas</li>
+      <li class="tab-menu" data-tab="quantidade_vendas_diarias">Quantidade de Vendas Diárias</li>
+      <li class="tab-menu" data-tab="vendas_fim_de_semana">Vendas no Fim de Semana por Vendedor</li>
+      <li class="tab-menu" data-tab="quantidade_vendas_fim_de_semana">Quantidade de Vendas no Fim de Semana por Vendedor</li>
+      <li class="tab-menu" data-tab="metas_vendedor">Metas Mensais dos Vendedores</li>
+      <li class="tab-menu" data-tab="metas_semanais_vendedor">Metas Semanais dos Vendedores</li>
+      <li class="tab-menu" data-tab="metas_diarias_vendedor">Metas Diárias dos Vendedores</li>
+      <li class="tab-menu" data-tab="banco_vendedores">Banco Vendedores</li>
+      <li class="tab-menu" data-tab="status_vendas">Status das Vendas</li>
+      <li class="tab-menu" data-tab="prazo_vendas_vendedor">Vendas por Prazo e Vendedor</li>
+      <li class="tab-menu" data-tab="verdes_vermelhos_geral">Tipos de Clientes Geral</li>
+      <li class="tab-menu" data-tab="verdes_vermelhos_vendedor">Tipos de Clientes por Vendedor</li>
+      <li class="tab-menu" data-tab="tipo_vendas_geral">Tipos de Vendas Geral</li>
+      <li class="tab-menu" data-tab="tipo_vendas_por_vendedor">Tipos de Vendas por Vendedor</li>
+      <li class="tab-menu" data-tab="produtos_mais_vendidos">Produtos mais Vendidos</li>
+      <li class="tab-menu" data-tab="mapa_vendas_por_estado">Mapa de Vendas</li>
+    </ul>
+  </div>
+
+  <div id="grafico-container">
+    <!-- Nome do gráfico ativo -->
+    <h3 id="nome-grafico-ativo">
+      Vendas Geral
+    </h3>
+    <!-- Cada gráfico é um tab -->
+    <div class="grafico-tab vendas_geral active" data-grafico="vendas_geral">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab vendas_vendedor" data-grafico="vendas_vendedor">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab vendas_diarias">
+      <form method="post" action="/">
+        <label for="data">Escolha a data:</label>
+        <input type="date" id="data" name="data">
+        <button type="submit">Filtrar</button>
+      </form>
+      {{ grafico_vendas_diarias | safe }}
+    </div>
+    <div class="grafico-tab vendas_diarias_linhas" data-grafico="vendas_diarias_linhas">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab quantidade_vendas_diarias" data-grafico="quantidade_vendas_diarias">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab vendas_fim_de_semana" data-grafico="vendas_fim_de_semana">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab quantidade_vendas_fim_de_semana" data-grafico="quantidade_vendas_fim_de_semana">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab metas_vendedor" data-grafico="metas_vendedor">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab metas_semanais_vendedor" data-grafico="metas_semanais_vendedor">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab metas_diarias_vendedor" data-grafico="metas_diarias_vendedor">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab banco_vendedores" data-grafico="banco_vendedores">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab status_vendas" data-grafico="status_vendas">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab prazo_vendas_vendedor" data-grafico="prazo_vendas_vendedor">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab verdes_vermelhos_geral" data-grafico="verdes_vermelhos_geral">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab verdes_vermelhos_vendedor" data-grafico="verdes_vermelhos_vendedor">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab tipo_vendas_geral" data-grafico="tipo_vendas_geral">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab tipo_vendas_por_vendedor" data-grafico="tipo_vendas_por_vendedor">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab produtos_mais_vendidos" data-grafico="produtos_mais_vendidos">
+      <div class="grafico-conteudo">Carregando...</div>
+    </div>
+    <div class="grafico-tab mapa_vendas_por_estado">
+      {{ grafico_mapa_vendas_por_estado | safe }}
+    </div>
+  </div>
+</div>
+
+<script src="../static/js/inicio.js"></script>
+<script>
+// filepath: c:\Users\deivid\Desktop\sistemaVendas\app\templates\inicio.html
+document.addEventListener('DOMContentLoaded', function() {
+  // Mapeamento para mostrar o nome do gráfico ativo
+  const nomes = {
+    vendas_geral: "Vendas Geral",
+    vendas_vendedor: "Vendas Mensais por Vendedor",
+    vendas_diarias: "Vendas Diárias por Vendedor",
+    vendas_diarias_linhas: "Vendas Diárias Linhas",
+    quantidade_vendas_diarias: "Quantidade de Vendas Diárias",
+    vendas_fim_de_semana: "Vendas no Fim de Semana por Vendedor",
+    quantidade_vendas_fim_de_semana: "Quantidade de Vendas no Fim de Semana por Vendedor",
+    metas_vendedor: "Metas Mensais dos Vendedores",
+    metas_semanais_vendedor: "Metas Semanais dos Vendedores",
+    metas_diarias_vendedor: "Metas Diárias dos Vendedores",
+    banco_vendedores: "Banco Vendedores",
+    status_vendas: "Status das Vendas",
+    prazo_vendas_vendedor: "Vendas por Prazo e Vendedor",
+    verdes_vermelhos_geral: "Tipos de Clientes Geral",
+    verdes_vermelhos_vendedor: "Tipos de Clientes por Vendedor",
+    tipo_vendas_geral: "Tipos de Vendas Geral",
+    tipo_vendas_por_vendedor: "Tipos de Vendas por Vendedor",
+    produtos_mais_vendidos: "Produtos mais Vendidos",
+    mapa_vendas_por_estado: "Mapa de Vendas"
+  };
+  const tabs = document.querySelectorAll('.tab-menu');
+  const graficos = document.querySelectorAll('.grafico-tab');
+  const nomeGrafico = document.getElementById('nome-grafico-ativo');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const tabId = this.getAttribute('data-tab');
+      graficos.forEach(g => g.classList.remove('active'));
+      document.querySelector('.grafico-tab.' + tabId).classList.add('active');
+      nomeGrafico.textContent = nomes[tabId] || '';
+    });
+  });
+
+  // Esconde dashboard e mostra só download no mobile ao carregar
+  function toggleMobileDashboard() {
+    if (window.innerWidth <= 768) {
+      document.querySelectorAll('.form-filtro, #menu-graficos, #grafico-container').forEach(e => e.style.display = 'none');
+      document.getElementById('mostrar-opcoes-pdf').style.display = 'block';
+    } else {
+      document.querySelectorAll('.form-filtro, #menu-graficos, #grafico-container').forEach(e => e.style.display = '');
+      document.getElementById('mostrar-opcoes-pdf').style.display = '';
+    }
+  }
+  toggleMobileDashboard();
+  window.addEventListener('resize', toggleMobileDashboard);
+
+  // Novo método JS para baixar PDF sem reload
+  const form = document.getElementById('form-graficos');
+  const botao = document.getElementById('botao-download');
+  const msg = document.getElementById('msg-download-pdf');
+  if (botao && form) {
+    botao.addEventListener('click', async function(e) {
+      msg.textContent = '';
+      // Monta os dados do formulário
+      const formData = new FormData(form);
+      // Validação: pelo menos um gráfico
+      if (!formData.getAll('graficos').length) {
+        msg.textContent = 'Selecione ao menos um gráfico.';
+        return;
+      }
+      // Adiciona mês e ano dos selects (se existirem)
+      const mes = document.getElementById('mes');
+      const ano = document.getElementById('ano');
+      if (mes) formData.append('mes', mes.value);
+      if (ano) formData.append('ano', ano.value);
+
+      botao.disabled = true;
+      botao.textContent = 'Gerando PDF...';
+      try {
+        const response = await fetch('/baixar-pdf-graficos', {
+          method: 'POST',
+          body: formData
+        });
+        if (!response.ok) {
+          const erro = await response.text();
+          msg.textContent = erro || 'Erro ao gerar PDF.';
+          botao.disabled = false;
+          botao.textContent = '📄 Baixar PDF';
+          return;
+        }
+        const blob = await response.blob();
+        // Nome do arquivo
+        let nome = formData.get('nome') || 'relatorio';
+        if (!nome.endsWith('.pdf')) nome += '.pdf';
+        // Cria link para download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nome;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+          a.remove();
+        }, 1000);
+        botao.disabled = false;
+        botao.textContent = '📄 Baixar PDF';
+      } catch (err) {
+        msg.textContent = 'Erro ao gerar PDF.';
+        botao.disabled = false;
+        botao.textContent = '📄 Baixar PDF';
+      }
+    });
+  }
+
+  // Controle correto do form-relatorio no mobile
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('mostrar-opcoes-pdf');
+    var downloadDiv = document.getElementById('download');
+    function isMobile() {
+      return window.innerWidth <= 768;
+    }
+    if (btn && downloadDiv) {
+      btn.addEventListener('click', function() {
+        if (isMobile()) {
+          downloadDiv.classList.toggle('mostrar');
+          // Sempre força display block se mostrar, none se não mostrar
+          if (downloadDiv.classList.contains('mostrar')) {
+            downloadDiv.style.display = 'block';
+          } else {
+            downloadDiv.style.display = 'none';
+          }
+        } else {
+          downloadDiv.style.display = (downloadDiv.style.display === 'block') ? 'none' : 'block';
+        }
+      });
+      window.addEventListener('resize', function() {
+        if (isMobile()) {
+          if (downloadDiv.classList.contains('mostrar')) {
+            downloadDiv.style.display = 'block';
+          } else {
+            downloadDiv.style.display = 'none';
+          }
+        } else {
+          downloadDiv.classList.remove('mostrar');
+          downloadDiv.style.display = 'none';
+        }
+      });
+    }
+
+    // Garante que o botão de download nunca faz submit do form
+    var botaoDownload = document.getElementById('botao-download');
+    if (botaoDownload) {
+      botaoDownload.setAttribute('type', 'button');
+    }
+  });
+
+  // Script para selecionar/desmarcar todos os checkboxes de gráficos
+  document.addEventListener('DOMContentLoaded', function() {
+    const btnSelecionar = document.getElementById('selecionar-todos-graficos');
+    const btnDesmarcar = document.getElementById('desmarcar-todos-graficos');
+    if (btnSelecionar && btnDesmarcar) {
+      btnSelecionar.addEventListener('click', function() {
+        document.querySelectorAll('input[name="graficos"]').forEach(cb => cb.checked = true);
+      });
+      btnDesmarcar.addEventListener('click', function() {
+        document.querySelectorAll('input[name="graficos"]').forEach(cb => cb.checked = false);
+      });
+    }
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'layout.html' %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="../static/css/logs.css">
+
+<div class="container-logs">
+  <h2>Logs do sistema</h2>
+
+  <!-- Campo de busca -->
+  <div class="filtros-logs">
+    <label>Pesquisar:</label>
+    <input type="text" id="busca-log" placeholder="Buscar por usuário ou ação...">
+    <label for="data-log-inicio">Data início:</label>
+    <input type="date" id="data-log-inicio">
+    <label for="data-log-fim">Data fim:</label>
+    <input type="date" id="data-log-fim" disabled>
+    <button id="btn-buscar-log">Pesquisar 🔍</button>
+  </div>
+
+  <!-- Tabela de logs -->
+  <div class="tabela-wrapper">
+    <table class="tabela-logs">
+      <thead>
+        <tr>
+          <th>data</th>
+          <th>hora</th>
+          <th>modificação</th>
+          <th>usuario</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-logs-body">
+        <!-- Conteúdo gerado via JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginação -->
+  <div class="usuarios-paginacao" id="paginacao-logs"></div>
+</div>
+
+<script src="../static/js/logs.js"></script>
+<script>
+  // Torna os logs disponíveis para o JS externo
+  window.logsData = JSON.parse('{{ logs | tojson | safe }}');
+
+  // Lógica para habilitar data fim só se data início estiver preenchida
+  document.addEventListener('DOMContentLoaded', function() {
+    const dataInicio = document.getElementById('data-log-inicio');
+    const dataFim = document.getElementById('data-log-fim');
+    function toggleFim() {
+      if (dataInicio.value) {
+        dataFim.disabled = false;
+        dataFim.min = dataInicio.value;
+      } else {
+        dataFim.disabled = true;
+        dataFim.value = '';
+      }
+    }
+    dataInicio.addEventListener('change', toggleFim);
+    toggleFim();
+  });
+
+  // Lógica de filtro por data início e fim
+  document.addEventListener('DOMContentLoaded', function() {
+    const btnBuscar = document.getElementById('btn-buscar-log');
+    const dataInicio = document.getElementById('data-log-inicio');
+    const dataFim = document.getElementById('data-log-fim');
+    const buscaInput = document.getElementById('busca-log');
+    btnBuscar.addEventListener('click', function(e) {
+      e.preventDefault();
+      const logs = window.logsData || [];
+      const busca = (buscaInput.value || '').toLowerCase();
+      const di = dataInicio.value;
+      const df = dataFim.value;
+      let filtrados = logs;
+
+      // Filtro texto
+      if (busca) {
+        filtrados = filtrados.filter(l =>
+          (l.usuario && l.usuario.toLowerCase().includes(busca)) ||
+          (l.modificacao && l.modificacao.toLowerCase().includes(busca))
+        );
+      }
+
+      // Filtro por data início e fim
+      if (di && df) {
+        filtrados = filtrados.filter(l => {
+          const [dia, mes, ano] = (l.data || '').split('/');
+          if (!ano) return false;
+          const dataLog = new Date(`${ano}-${mes}-${dia}`);
+          const dataIni = new Date(di);
+          const dataFi = new Date(df);
+          dataFi.setHours(23,59,59,999);
+          return dataLog >= dataIni && dataLog <= dataFi;
+        });
+      } else if (di) {
+        filtrados = filtrados.filter(l => {
+          const [dia, mes, ano] = (l.data || '').split('/');
+          if (!ano) return false;
+          const dataLog = new Date(`${ano}-${mes}-${dia}`);
+          const dataIni = new Date(di);
+          const dataFi = new Date(di);
+          dataFi.setHours(23,59,59,999);
+          return dataLog >= dataIni && dataLog <= dataFi;
+        });
+      }
+
+      // Atualiza a tabela
+      const tbody = document.getElementById('tabela-logs-body');
+      tbody.innerHTML = '';
+      filtrados.forEach(l => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${l.data}</td><td>${l.hora}</td><td>${l.modificacao}</td><td>${l.usuario}</td>`;
+        tbody.appendChild(tr);
+      });
+      // Atualiza paginação se necessário (se usar paginação JS)
+      if (typeof window.atualizarPaginacaoLogs === 'function') {
+        window.atualizarPaginacaoLogs(filtrados);
+      }
+    });
+  });
+</script>
+{% endblock %}
